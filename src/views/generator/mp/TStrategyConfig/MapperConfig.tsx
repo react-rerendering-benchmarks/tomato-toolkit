@@ -1,34 +1,27 @@
-import { useStore } from '@/store'
-import { defaultMapper } from '@/store/mp/strategy'
-import { Mapper } from '@/types/type'
-import { renderRadio } from '@/utils/renderRadio'
-import {
-  Button,
-  Form, Grid, Input, Radio,
-} from '@arco-design/web-react'
-import { FC } from 'react'
-
-const MapperConfig: FC = () => {
-  const store = useStore()
-  const [form] = Form.useForm<Mapper>()
-
-  reaction(() => store.mp.strategyStore.isHydrated, (isHydrated) => {
-    if(isHydrated) {
-      form.setFieldsValue({...store.mp.strategyStore.mapper})
+import { memo } from "react";
+import { useStore } from '@/store';
+import { defaultMapper } from '@/store/mp/strategy';
+import { Mapper } from '@/types/type';
+import { renderRadio } from '@/utils/renderRadio';
+import { Button, Form, Grid, Input, Radio } from '@arco-design/web-react';
+import { FC } from 'react';
+const MapperConfig: FC = memo(() => {
+  const store = useStore();
+  const [form] = Form.useForm<Mapper>();
+  reaction(() => store.mp.strategyStore.isHydrated, isHydrated => {
+    if (isHydrated) {
+      form.setFieldsValue({
+        ...store.mp.strategyStore.mapper
+      });
     }
-  })
-  return (
-    <Form<Mapper>
-      colon
-      form={form}
-      layout="vertical"
-      initialValues={store.mp.strategyStore.mapper}
-      onValuesChange={(_, vs) => {
-        store.mp.strategyStore.setMapperConfig(vs)
-      }}
-    >
+  });
+  return <Form<Mapper> colon form={form} layout="vertical" initialValues={store.mp.strategyStore.mapper} onValuesChange={(_, vs) => {
+    store.mp.strategyStore.setMapperConfig(vs);
+  }}>
       <Form.Item>
-        <Button status="warning" onClick={() => {form.setFieldsValue(defaultMapper)}}>
+        <Button status="warning" onClick={() => {
+        form.setFieldsValue(defaultMapper);
+      }}>
           重置
         </Button>
       </Form.Item>
@@ -65,8 +58,6 @@ const MapperConfig: FC = () => {
           </Form.Item>
         </Grid.Col>
       </Grid.Row>
-    </Form>
-  )
-}
-
-export default observer(MapperConfig)
+    </Form>;
+});
+export default observer(MapperConfig);

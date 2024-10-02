@@ -1,34 +1,27 @@
-import { useStore } from '@/store'
-import { defaultService } from '@/store/mp/strategy'
-import { Service } from '@/types/type'
-import { renderRadio } from '@/utils/renderRadio'
-import {
-  Button,
-  Form, Grid, Input, Radio,
-} from '@arco-design/web-react'
-import { FC } from 'react'
-
-const ServiceConfig: FC = () => {
-  const store = useStore()
-  const [form] = Form.useForm<Service>()
-
-  reaction(() => store.mp.strategyStore.isHydrated, (isHydrated) => {
-    if(isHydrated) {
-      form.setFieldsValue({...store.mp.strategyStore.service})
+import { memo } from "react";
+import { useStore } from '@/store';
+import { defaultService } from '@/store/mp/strategy';
+import { Service } from '@/types/type';
+import { renderRadio } from '@/utils/renderRadio';
+import { Button, Form, Grid, Input, Radio } from '@arco-design/web-react';
+import { FC } from 'react';
+const ServiceConfig: FC = memo(() => {
+  const store = useStore();
+  const [form] = Form.useForm<Service>();
+  reaction(() => store.mp.strategyStore.isHydrated, isHydrated => {
+    if (isHydrated) {
+      form.setFieldsValue({
+        ...store.mp.strategyStore.service
+      });
     }
-  })
-  return (
-    <Form<Service>
-      colon
-      form={form}
-      layout="vertical"
-      initialValues={store.mp.strategyStore.service}
-      onValuesChange={(_, vs) => {
-        store.mp.strategyStore.setServiceConfig(vs)
-      }}
-    >
+  });
+  return <Form<Service> colon form={form} layout="vertical" initialValues={store.mp.strategyStore.service} onValuesChange={(_, vs) => {
+    store.mp.strategyStore.setServiceConfig(vs);
+  }}>
       <Form.Item>
-        <Button status="warning" onClick={() => {form.setFieldsValue(defaultService)}}>
+        <Button status="warning" onClick={() => {
+        form.setFieldsValue(defaultService);
+      }}>
           重置
         </Button>
       </Form.Item>
@@ -65,8 +58,6 @@ const ServiceConfig: FC = () => {
           </Form.Item>
         </Grid.Col>
       </Grid.Row>
-    </Form>
-  )
-}
-
-export default observer(ServiceConfig)
+    </Form>;
+});
+export default observer(ServiceConfig);
