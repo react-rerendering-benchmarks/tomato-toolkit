@@ -1,34 +1,27 @@
-import { useStore } from '@/store'
-import { defaultController } from '@/store/mp/strategy'
-import { Controller } from '@/types/type'
-import { renderRadio } from '@/utils/renderRadio'
-import {
-  Button,
-  Form, Grid, Input, Radio,
-} from '@arco-design/web-react'
-import { FC } from 'react'
-
-const ControllerConfig: FC = () => {
-  const store = useStore()
-  const [form] = Form.useForm<Controller>()
-
-  reaction(() => store.mp.strategyStore.isHydrated, (isHydrated) => {
-    if(isHydrated) {
-      form.setFieldsValue({...store.mp.strategyStore.controller})
+import { memo } from "react";
+import { useStore } from '@/store';
+import { defaultController } from '@/store/mp/strategy';
+import { Controller } from '@/types/type';
+import { renderRadio } from '@/utils/renderRadio';
+import { Button, Form, Grid, Input, Radio } from '@arco-design/web-react';
+import { FC } from 'react';
+const ControllerConfig: FC = memo(() => {
+  const store = useStore();
+  const [form] = Form.useForm<Controller>();
+  reaction(() => store.mp.strategyStore.isHydrated, isHydrated => {
+    if (isHydrated) {
+      form.setFieldsValue({
+        ...store.mp.strategyStore.controller
+      });
     }
-  })
-  return (
-    <Form
-      colon
-      form={form}
-      layout="vertical"
-      initialValues={store.mp.strategyStore.controller}
-      onValuesChange={(_, vs) => {
-        store.mp.strategyStore.setControllerConfig(vs)
-      }}
-    >
+  });
+  return <Form colon form={form} layout="vertical" initialValues={store.mp.strategyStore.controller} onValuesChange={(_, vs) => {
+    store.mp.strategyStore.setControllerConfig(vs);
+  }}>
       <Form.Item>
-        <Button status="warning" onClick={() => {form.setFieldsValue(defaultController)}}>
+        <Button status="warning" onClick={() => {
+        form.setFieldsValue(defaultController);
+      }}>
           重置
         </Button>
       </Form.Item>
@@ -67,8 +60,6 @@ const ControllerConfig: FC = () => {
           </Form.Item>
         </Grid.Col>
       </Grid.Row>
-    </Form>
-  )
-}
-
-export default observer(ControllerConfig)
+    </Form>;
+});
+export default observer(ControllerConfig);

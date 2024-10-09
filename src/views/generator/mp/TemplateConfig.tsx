@@ -1,51 +1,36 @@
-import { FC } from 'react'
-import {
-  Form,
-  Input,
-  Button,
-  Grid,
-  Space,
-  Message,
-} from '@arco-design/web-react'
-import { TemplateConfig } from '@/types/type'
-import { useStore } from '@/store'
-import { initialTemplateConfig } from '@/store/mp/template'
-import { path, shell } from '@tauri-apps/api'
-
-const TTemplateConfig: FC = () => {
-  const store = useStore()
-  const [form] = Form.useForm<TemplateConfig>()
-
-  reaction(() => store.mp.templateStore.isHydrated, (isHydrated) => {
-    if(isHydrated) {
-      form.setFieldsValue({...store.mp.templateStore.template})
+import { memo } from "react";
+import { FC } from 'react';
+import { Form, Input, Button, Grid, Space, Message } from '@arco-design/web-react';
+import { TemplateConfig } from '@/types/type';
+import { useStore } from '@/store';
+import { initialTemplateConfig } from '@/store/mp/template';
+import { path, shell } from '@tauri-apps/api';
+const TTemplateConfig: FC = memo(() => {
+  const store = useStore();
+  const [form] = Form.useForm<TemplateConfig>();
+  reaction(() => store.mp.templateStore.isHydrated, isHydrated => {
+    if (isHydrated) {
+      form.setFieldsValue({
+        ...store.mp.templateStore.template
+      });
     }
-  })
-
+  });
   const openTemplateDirectory = async () => {
     try {
-      const resource = await path.resolveResource('templates')
-      await shell.open(resource)
+      const resource = await path.resolveResource('templates');
+      await shell.open(resource);
     } catch (error) {
-      Message.error(error as string)
+      Message.error((error as string));
     }
-  }
-
-  return (
-    <Form<TemplateConfig>
-      colon
-      form={form}
-      layout="vertical"
-      initialValues={store.mp.templateStore.template}
-      onValuesChange={(v) => {
-        store.mp.templateStore.setTemplateConfig(v)
-      }}
-    >
+  };
+  return <Form<TemplateConfig> colon form={form} layout="vertical" initialValues={store.mp.templateStore.template} onValuesChange={v => {
+    store.mp.templateStore.setTemplateConfig(v);
+  }}>
       <Form.Item>
         <Space>
           <Button status="warning" onClick={() => {
-            form.setFieldsValue(initialTemplateConfig)
-          }}>
+          form.setFieldsValue(initialTemplateConfig);
+        }}>
             重置
           </Button>
           <Button type="primary" onClick={openTemplateDirectory}>
@@ -94,8 +79,6 @@ const TTemplateConfig: FC = () => {
           </Form.Item>
         </Grid.Col>
       </Grid.Row>
-    </Form>
-  )
-}
-
-export default observer(TTemplateConfig)
+    </Form>;
+});
+export default observer(TTemplateConfig);

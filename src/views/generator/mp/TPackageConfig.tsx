@@ -1,38 +1,26 @@
-import { FC } from 'react'
-import {
-  Form,
-  Input,
-  Button,
-  Grid,
-} from '@arco-design/web-react'
-import { PackageConfig } from '@/types/type'
-import { useStore } from '@/store'
-import { initialPackageConfig } from '@/store/mp/package'
-
-const TPackageConfig: FC = () => {
-  const store = useStore()
-  const [form] = Form.useForm<PackageConfig>()
-
-  reaction(() => store.mp.packageStore.isHydrated, (isHydrated) => {
-    if(isHydrated) {
-      form.setFieldsValue({...store.mp.packageStore.package})
+import { memo } from "react";
+import { FC } from 'react';
+import { Form, Input, Button, Grid } from '@arco-design/web-react';
+import { PackageConfig } from '@/types/type';
+import { useStore } from '@/store';
+import { initialPackageConfig } from '@/store/mp/package';
+const TPackageConfig: FC = memo(() => {
+  const store = useStore();
+  const [form] = Form.useForm<PackageConfig>();
+  reaction(() => store.mp.packageStore.isHydrated, isHydrated => {
+    if (isHydrated) {
+      form.setFieldsValue({
+        ...store.mp.packageStore.package
+      });
     }
-  })
-
-  return (
-    <Form<PackageConfig>
-      colon
-      form={form}
-      layout="vertical"
-      initialValues={store.mp.packageStore.package}
-      onValuesChange={(v) => {
-        store.mp.packageStore.setPackageConfig(v)
-      }}
-    >
+  });
+  return <Form<PackageConfig> colon form={form} layout="vertical" initialValues={store.mp.packageStore.package} onValuesChange={v => {
+    store.mp.packageStore.setPackageConfig(v);
+  }}>
       <Form.Item>
         <Button status="warning" onClick={() => {
-          form.setFieldsValue(initialPackageConfig)
-        }}>
+        form.setFieldsValue(initialPackageConfig);
+      }}>
           重置
         </Button>
       </Form.Item>
@@ -82,8 +70,6 @@ const TPackageConfig: FC = () => {
           </Form.Item>
         </Grid.Col>
       </Grid.Row>
-    </Form>
-  )
-}
-
-export default observer(TPackageConfig)
+    </Form>;
+});
+export default observer(TPackageConfig);

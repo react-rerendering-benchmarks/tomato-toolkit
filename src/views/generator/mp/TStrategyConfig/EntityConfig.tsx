@@ -1,120 +1,89 @@
-import { useStore } from '@/store'
-import { defaultEntity } from '@/store/mp/strategy'
-import { Entity } from '@/types/type'
-import { renderRadio } from '@/utils/renderRadio'
-import {
-  Button,
-  Form, Grid, Input, InputTag, Radio, Select, Space,
-} from '@arco-design/web-react'
-import { IconDelete, IconPlus } from '@arco-design/web-react/icon'
-import { FC } from 'react'
-
-const idTypeOptions = [
-  {
-    label: 'AUTO',
-    value: 'AUTO',
-  },
-  {
-    label: 'NONE',
-    value: 'NONE',
-  },
-  {
-    label: 'INPUT',
-    value: 'INPUT',
-  },
-  {
-    label: 'ASSIGN_ID',
-    value: 'ASSIGN_ID',
-  },
-  {
-    label: 'ASSIGN_UUID',
-    value: 'ASSIGN_UUID',
-  },
-]
-
-const fieldFillOptions = [
-  {
-    label: 'DEFAULT',
-    value: 'DEFAULT',
-  },
-  {
-    label: 'INSERT',
-    value: 'INSERT',
-  },
-  {
-    label: 'UPDATE',
-    value: 'UPDATE',
-  },
-  {
-    label: 'INSERT_UPDATE',
-    value: 'INSERT_UPDATE',
-  },
-]
-
-const EntityConfig: FC = () => {
-  const store = useStore()
-  const [form] = Form.useForm<Entity>()
-
-  reaction(() => store.mp.strategyStore.isHydrated, (isHydrated) => {
-    if(isHydrated) {
-      form.setFieldsValue({...store.mp.strategyStore.entity})
+import { memo } from "react";
+import { useStore } from '@/store';
+import { defaultEntity } from '@/store/mp/strategy';
+import { Entity } from '@/types/type';
+import { renderRadio } from '@/utils/renderRadio';
+import { Button, Form, Grid, Input, InputTag, Radio, Select, Space } from '@arco-design/web-react';
+import { IconDelete, IconPlus } from '@arco-design/web-react/icon';
+import { FC } from 'react';
+const idTypeOptions = [{
+  label: 'AUTO',
+  value: 'AUTO'
+}, {
+  label: 'NONE',
+  value: 'NONE'
+}, {
+  label: 'INPUT',
+  value: 'INPUT'
+}, {
+  label: 'ASSIGN_ID',
+  value: 'ASSIGN_ID'
+}, {
+  label: 'ASSIGN_UUID',
+  value: 'ASSIGN_UUID'
+}];
+const fieldFillOptions = [{
+  label: 'DEFAULT',
+  value: 'DEFAULT'
+}, {
+  label: 'INSERT',
+  value: 'INSERT'
+}, {
+  label: 'UPDATE',
+  value: 'UPDATE'
+}, {
+  label: 'INSERT_UPDATE',
+  value: 'INSERT_UPDATE'
+}];
+const EntityConfig: FC = memo(() => {
+  const store = useStore();
+  const [form] = Form.useForm<Entity>();
+  reaction(() => store.mp.strategyStore.isHydrated, isHydrated => {
+    if (isHydrated) {
+      form.setFieldsValue({
+        ...store.mp.strategyStore.entity
+      });
     }
-  })
+  });
 
   // 渲染表填充字段
-  const renderTableFillList = (
-    add: (defaultValue?: any, index?: number) => void,
-    remove: (index: number) => void,
-    item: {key: number, field: string},
-    index: number,
-  ) => (
-    <Grid.Row  gutter={24}>
-      <Grid.Col xs={10} md={10} >
-        <Form.Item
-          field={item.field + '.propertyName'}
-          rules={[{ required: true }]}
-          noStyle
-        >
+  const renderTableFillList = (add: (defaultValue?: any, index?: number) => void, remove: (index: number) => void, item: {
+    key: number;
+    field: string;
+  }, index: number) => <Grid.Row gutter={24}>
+      <Grid.Col xs={10} md={10}>
+        <Form.Item field={item.field + '.propertyName'} rules={[{
+        required: true
+      }]} noStyle>
           <Input placeholder="例如：create_time, update_time" />
         </Form.Item>
       </Grid.Col>
       <Grid.Col xs={10} md={10}>
-        <Form.Item
-          field={item.field + '.fieldFill'}
-          rules={[{ required: true }]}
-          noStyle
-        >
+        <Form.Item field={item.field + '.fieldFill'} rules={[{
+        required: true
+      }]} noStyle>
           <Select options={fieldFillOptions} />
         </Form.Item>
       </Grid.Col>
       <Grid.Col xs={4} md={4}>
         <Space>
-          <Button
-            icon={<IconPlus />}
-            onClick={() => {add({propertyName: '',fieldFill: 'INSERT'})}}
-          />
-          <Button
-            icon={<IconDelete />}
-            shape='circle'
-            status='danger'
-            onClick={() => remove(index)}
-          />
+          <Button icon={<IconPlus />} onClick={() => {
+          add({
+            propertyName: '',
+            fieldFill: 'INSERT'
+          });
+        }} />
+          <Button icon={<IconDelete />} shape='circle' status='danger' onClick={() => remove(index)} />
         </Space>
       </Grid.Col>
-    </Grid.Row>
-  )
-  return (
-    <Form<Entity>
-      colon
-      form={form}
-      layout="vertical"
-      initialValues={store.mp.strategyStore.entity}
-      onValuesChange={(_, vs) => {
-        store.mp.strategyStore.setEntityConfig(vs)
-      }}
-    >
+    </Grid.Row>;
+  return <Form<Entity> colon form={form} layout="vertical" initialValues={store.mp.strategyStore.entity} onValuesChange={(_, vs) => {
+    store.mp.strategyStore.setEntityConfig(vs);
+  }}>
       <Form.Item>
-        <Button status="warning" onClick={() => {form.setFieldsValue(defaultEntity)}}>
+        <Button status="warning" onClick={() => {
+        form.setFieldsValue(defaultEntity);
+      }}>
           重置
         </Button>
       </Form.Item>
@@ -171,7 +140,7 @@ const EntityConfig: FC = () => {
             </Radio.Group>
           </Form.Item>
         </Grid.Col>
-        <Grid.Col xs={12}  md={8}>
+        <Grid.Col xs={12} md={8}>
           <Form.Item label="开启ActiveRecord模型" field="activeRecord">
             <Radio.Group type="button">
               {renderRadio()}
@@ -186,16 +155,13 @@ const EntityConfig: FC = () => {
         </Grid.Col>
         <Grid.Col xs={12}>
           <Form.Item label="数据库表映射到实体的命名策略" field="naming">
-            <Select options={[
-              {
-                label: '无操作',
-                value: 'NoChange',
-              },
-              {
-                label: '下划线转驼峰',
-                value: 'UnderlineToCamel',
-              },
-            ]} />
+            <Select options={[{
+            label: '无操作',
+            value: 'NoChange'
+          }, {
+            label: '下划线转驼峰',
+            value: 'UnderlineToCamel'
+          }]} />
           </Form.Item>
         </Grid.Col>
 
@@ -229,55 +195,46 @@ const EntityConfig: FC = () => {
 
         <Grid.Col xs={24} md={24}>
           <Form.Item label="添加父类公共字段" field="superEntityColumns">
-            <InputTag
-              allowClear
-              placeholder="例如: id, is_deleted, create_time，按回车确定"
-            />
+            <InputTag allowClear placeholder="例如: id, is_deleted, create_time，按回车确定" />
           </Form.Item>
         </Grid.Col>
         <Grid.Col xs={24} md={24}>
           <Form.Item label="添加忽略字段" field="ignoreColumns">
-            <InputTag
-              allowClear
-              placeholder="例如：create_time, update_time，按回车确定"
-            />
+            <InputTag allowClear placeholder="例如：create_time, update_time，按回车确定" />
           </Form.Item>
         </Grid.Col>
 
         <Grid.Col xs={24} md={24}>
           <Form.Item label="格式化文件名称" field="formatFilename">
-            <Input placeholder="示例: {}Entity, {}表示占位符"/>
+            <Input placeholder="示例: {}Entity, {}表示占位符" />
           </Form.Item>
         </Grid.Col>
         <Grid.Col xs={24} md={24}>
           <Form.Item label="添加填充字段">
             <Form.List field='tableFillList'>
-              {(fields, { add, remove  }) => (<>
-                {fields.length ? fields.map((item, index) => (
-                  <Form.Item key={item.key}>
+              {(fields, {
+              add,
+              remove
+            }) => <>
+                {fields.length ? fields.map((item, index) => <Form.Item key={item.key}>
                     {renderTableFillList(add, remove, item, index)}
-                  </Form.Item>
-                ))
-                  :
-                // 如果数据为空
-                  <Form.Item>
-                    <Button
-                      long
-                      onClick={() => {
-                        add({propertyName: '',fieldFill: 'INSERT'})
-                      }}
-                    >
+                  </Form.Item>) :
+              // 如果数据为空
+              <Form.Item>
+                    <Button long onClick={() => {
+                  add({
+                    propertyName: '',
+                    fieldFill: 'INSERT'
+                  });
+                }}>
                     添加
                     </Button>
-                  </Form.Item>
-                }
-              </>)}
+                  </Form.Item>}
+              </>}
             </Form.List>
           </Form.Item>
         </Grid.Col>
       </Grid.Row>
-    </Form>
-  )
-}
-
-export default observer(EntityConfig)
+    </Form>;
+});
+export default observer(EntityConfig);

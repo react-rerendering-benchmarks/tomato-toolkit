@@ -1,134 +1,92 @@
-
-import {
-  Form,
-  Image,
-  Input,
-  InputNumber,
-  Select,
-  Button,
-  Space,
-  Grid,
-  Message,
-} from '@arco-design/web-react'
-import mysqlIcon from '@/assets/mysql.svg'
-import sqliteIcon from '@/assets/sqlite.svg'
-import mssqlIcon from '@/assets/mssql.svg'
-import postgresIcon from '@/assets/postgres.svg'
-import { LabeledValue, OptionInfo } from '@arco-design/web-react/es/Select/interface'
-import { useStore } from '@/store'
-import { BasicTableInfo, DatasourceConfig } from '@/types/type'
-import { IconLock, IconUser, IconSend } from '@arco-design/web-react/icon'
-import { initDataSourceConfig } from '@/store/mp/datasource'
-import { FC } from 'react'
-import { invoke } from '@tauri-apps/api'
-
+import { memo } from "react";
+import { Form, Image, Input, InputNumber, Select, Button, Space, Grid, Message } from '@arco-design/web-react';
+import mysqlIcon from '@/assets/mysql.svg';
+import sqliteIcon from '@/assets/sqlite.svg';
+import mssqlIcon from '@/assets/mssql.svg';
+import postgresIcon from '@/assets/postgres.svg';
+import { LabeledValue, OptionInfo } from '@arco-design/web-react/es/Select/interface';
+import { useStore } from '@/store';
+import { BasicTableInfo, DatasourceConfig } from '@/types/type';
+import { IconLock, IconUser, IconSend } from '@arco-design/web-react/icon';
+import { initDataSourceConfig } from '@/store/mp/datasource';
+import { FC } from 'react';
+import { invoke } from '@tauri-apps/api';
 const getIcon = (value: string) => {
   switch (value) {
-  case 'mysql':
-    return mysqlIcon
-  case 'sqlite':
-    return sqliteIcon
-  case 'sqlserver':
-    return mssqlIcon
-  case 'postgressql':
-    return postgresIcon
-  default:
-    return mysqlIcon
+    case 'mysql':
+      return mysqlIcon;
+    case 'sqlite':
+      return sqliteIcon;
+    case 'sqlserver':
+      return mssqlIcon;
+    case 'postgressql':
+      return postgresIcon;
+    default:
+      return mysqlIcon;
   }
-}
-
-const options = [
-  {
-    label: (
-      <div className="flex items-center space-x-3">
+};
+const options = [{
+  label: <div className="flex items-center space-x-3">
         <Image src={mysqlIcon} width={30} preview={false} />
         <span>mysql</span>
-      </div>
-    ),
-    value: 'mysql',
-  },
-  {
-    label: (
-      <div className="flex items-center space-x-3">
+      </div>,
+  value: 'mysql'
+}, {
+  label: <div className="flex items-center space-x-3">
         <Image src={sqliteIcon} width={30} preview={false} />
         <span>sqlite（大致做完了，但不一定正确</span>
-      </div>
-    ),
-    value: 'sqlite',
-  },
-  {
-    label: (
-      <div className="flex items-center space-x-3">
+      </div>,
+  value: 'sqlite'
+}, {
+  label: <div className="flex items-center space-x-3">
         <Image src={mssqlIcon} width={30} preview={false} />
         <span>sqlserver</span>
-      </div>
-    ),
-    value: 'sqlserver',
-    disabled: true,
-  },
-  {
-    label: (
-      <div className="flex items-center space-x-3">
+      </div>,
+  value: 'sqlserver',
+  disabled: true
+}, {
+  label: <div className="flex items-center space-x-3">
         <Image src={postgresIcon} width={30} preview={false} />
         <span>postgressql</span>
-      </div>
-    ),
-    value: 'postgressql',
-    disabled: true,
-  },
-]
-
-const DataSourceConfig: FC = () => {
-  const store = useStore()
-  const [form] = Form.useForm <DatasourceConfig>()
-
-  reaction(() => store.mp.dataSourceStore.isHydrated, (isHydrated) => {
-    if(isHydrated) {
-      form.setFieldsValue({...store.mp.dataSourceStore.dataSource})
+      </div>,
+  value: 'postgressql',
+  disabled: true
+}];
+const DataSourceConfig: FC = memo(() => {
+  const store = useStore();
+  const [form] = Form.useForm<DatasourceConfig>();
+  reaction(() => store.mp.dataSourceStore.isHydrated, isHydrated => {
+    if (isHydrated) {
+      form.setFieldsValue({
+        ...store.mp.dataSourceStore.dataSource
+      });
     }
-  })
-
+  });
   const renderFormat = (option: OptionInfo | null, value: string | number | LabeledValue) => {
-    return (
-      <div className="flex items-center space-x-3">
-        <Image src={getIcon(value as string)} width={30} preview={false} />
-        {option ? option.value : value as string}
-      </div>
-    )
-  }
-
+    return <div className="flex items-center space-x-3">
+        <Image src={getIcon((value as string))} width={30} preview={false} />
+        {option ? option.value : (value as string)}
+      </div>;
+  };
   const handleTestConnection = async () => {
     try {
-      const basicTableInfos =  await invoke<BasicTableInfo[]>('test_connection',{
-        config: store.mp.dataSourceStore.dataSource,
-      })
-
-      store.mp.setBasicTableInfos(basicTableInfos)
-      Message.success('测试成功，请到策略配置选择要生成的表')
+      const basicTableInfos = await invoke<BasicTableInfo[]>('test_connection', {
+        config: store.mp.dataSourceStore.dataSource
+      });
+      store.mp.setBasicTableInfos(basicTableInfos);
+      Message.success('测试成功，请到策略配置选择要生成的表');
     } catch (error) {
-      Message.error(error as string)
+      Message.error((error as string));
     }
-  }
-
-  return (
-    <Form<DatasourceConfig>
-      form={form}
-      colon
-      layout="vertical"
-      initialValues={store.mp.dataSourceStore.dataSource}
-      onValuesChange={(v) => {
-        store.mp.dataSourceStore.setDataSourceConfig(v)
-      }}
-    >
+  };
+  return <Form<DatasourceConfig> form={form} colon layout="vertical" initialValues={store.mp.dataSourceStore.dataSource} onValuesChange={v => {
+    store.mp.dataSourceStore.setDataSourceConfig(v);
+  }}>
 
       <Grid.Row gutter={24}>
         <Grid.Col xs={24} md={12}>
           <Form.Item label="数据库类型" field="type">
-            <Select
-              placeholder="请选择"
-              options={options}
-              renderFormat={renderFormat}
-            />
+            <Select placeholder="请选择" options={options} renderFormat={renderFormat} />
           </Form.Item>
         </Grid.Col>
         <Grid.Col xs={24} md={12}>
@@ -160,28 +118,20 @@ const DataSourceConfig: FC = () => {
         </Grid.Col>
       </Grid.Row>
 
-      <Form.Item wrapperCol={{ offset: 8 }}>
+      <Form.Item wrapperCol={{
+      offset: 8
+    }}>
         <Space>
-          <Button
-            type='primary'
-            htmlType='submit'
-            icon={<IconSend />}
-            onClick={handleTestConnection}
-          >
+          <Button type='primary' htmlType='submit' icon={<IconSend />} onClick={handleTestConnection}>
               测试
           </Button>
-          <Button
-            status="danger"
-            onClick={() => {
-              form.setFieldsValue(initDataSourceConfig)
-            }}
-          >
+          <Button status="danger" onClick={() => {
+          form.setFieldsValue(initDataSourceConfig);
+        }}>
               重置
           </Button>
         </Space>
       </Form.Item>
-    </Form>
-  )
-}
-
-export default observer(DataSourceConfig)
+    </Form>;
+});
+export default observer(DataSourceConfig);
